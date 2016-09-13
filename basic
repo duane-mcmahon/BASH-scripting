@@ -1,28 +1,34 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash -i
 
 
 freememorycheck () {
-local returnValue=$(free -m | awk 'FNR == 2{print $3'})
+local returnValue
+returnValue=$(free -m | awk 'FNR == 2{print $3}')
 echo "The amount of free memory available is: $returnValue megabytes." 
  }
 
 diskusagecheck () {
-df -h 2>/dev/null | awk  '{print $1"\t\t" $4"\t"}' | column -t | less
+local returnValue
+returnValue=$(df -h 2>/dev/null | awk  '{print $1"\t\t" $4"\t"}' | column -t)
+echo "$returnValue" | more
 }
 
 quotacheck () {
-local returnValue=$(quota 2>/dev/null)
-echo $returnValue
+local returnValue
+returnValue=$(quota 2>/dev/null)
+echo "$returnValue"
 }
 
 groupscheck () {
-local returnValue=$(groups)
-echo $returnValue
+local returnValue
+returnValue=$(groups)
+echo "$returnValue"
 }
 
 historycheck () {
-local returnValue=$(bash -i <<< 'history')
-echo $returnValue | less
+local returnValue
+returnValue=$(history)
+echo "$returnValue" | less
 }
 
 if [[ $# -eq 0 || $# -gt 1 ]]; then
