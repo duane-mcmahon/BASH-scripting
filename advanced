@@ -1,0 +1,28 @@
+#!/usr/bin/bash
+
+getProcessorsNumber () { 
+local returnValue
+returnValue=$(grep -c ^processor /proc/cpuinfo)
+echo "$returnValue"    
+}
+
+openFilesFunc () {
+echo "something"
+}
+
+fileSearch () { 
+echo "$SOURCE"
+echo "$DESTINATION"
+}
+SOURCE=
+DESTINATION=
+while getopts “pob:” OPTION
+do
+    case $OPTION in
+        p) getProcessorsNumber;;
+        o) openFilesFunc;;
+        b) SOURCE=$OPTARG
+           eval "DESTINATION=\$$((OPTIND))"
+           fileSearch;;
+    esac
+done
