@@ -1,13 +1,16 @@
 #!/usr/bin/bash -i
 
+MEGABYTE=1024
 
-freememorycheck () {
+freemem () {
+local intermediateValue
 local returnValue
-returnValue=$(free -m | awk 'FNR == 2{print $3}')
+intermediateValue=$(awk 'FNR == 2{print $2}' /proc/meminfo)
+returnValue=$((intermediateValue / MEGABYTE))
 echo "The amount of free memory available is: $returnValue megabytes." 
  }
 
-diskusagecheck () {
+diskfree () {
 local returnValue
 returnValue=$(df -h 2>/dev/null | awk  '{print $1"\t\t" $4"\t"}' | column -t)
 echo "$returnValue" | more
@@ -36,11 +39,11 @@ if [[ $# -eq 0 || $# -gt 1 ]]; then
         exit 0
 fi
 
-selected_option=$1
+SELECTED_OPTION=$1
 
-case $selected_option in
-        "freemem") freememorycheck;;
-        "diskfree") diskusagecheck;;
+case $SELECTED_OPTION in
+        "freemem") freemem;;
+        "diskfree") diskfree;;
         "quota") quotacheck;;
         "groups") groupscheck;;
         "history") historycheck;;

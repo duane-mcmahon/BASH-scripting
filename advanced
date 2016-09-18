@@ -2,7 +2,8 @@
 
 getProcessorsNumber () { 
 local returnValue
-returnValue=$(grep -c ^processor /proc/cpuinfo)
+#returnValue=$(grep -c ^processor /proc/cpuinfo)
+returnValue=$(awk '/^processor/ {count++}END{print count}' /proc/cpuinfo)
 echo "$returnValue"    
 }
 
@@ -11,8 +12,15 @@ echo "something"
 }
 
 fileSearch () { 
-echo "$SOURCE"
-echo "$DESTINATION"
+if [ -z "$SOURCE" -o  -z "$DESTINATION" ]; then
+    echo "This option requires exactly TWO arguments."
+    exit 0
+fi
+local queryResult
+queryResult=$(find . ~/ -name "$SOURCE")
+if [ -n "$queryResult" ]; then
+    echo "$queryResult"
+fi
 }
 SOURCE=
 DESTINATION=
