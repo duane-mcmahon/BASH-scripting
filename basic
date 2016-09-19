@@ -1,4 +1,4 @@
-#!/usr/bin/bash -i
+#!/usr/bin/bash
 
 MEGABYTE=1024
 
@@ -24,13 +24,13 @@ echo "$returnValue"
 
 groupscheck () {
 local returnValue
-returnValue=$(groups)
-echo "$returnValue"
+returnValue=$(groups | awk '$1=$1' FS=" " OFS="\n")
+echo "$returnValue" | more
 }
 
 historycheck () {
 local returnValue
-returnValue=$(history)
+returnValue=$(cat ~/.bash_history)
 echo "$returnValue" | less
 }
 
