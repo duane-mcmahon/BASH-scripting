@@ -19,7 +19,18 @@ fi
 local queryResult
 queryResult=$(find . ~/ -name "$SOURCE")
 if [ -n "$queryResult" ]; then
-    echo "$queryResult"
+    if [ -d "$DESTINATION" ]; then
+        for item in $queryResult
+        do
+            cp -v "$item" "$DESTINATION"
+        done
+        return
+    fi
+    mkdir $DESTINATION
+    for item in $queryResult
+    do
+        cp -v "$item" "$DESTINATION"
+    done
 fi
 }
 SOURCE=
