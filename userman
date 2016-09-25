@@ -1,0 +1,23 @@
+#!/usr/bin/bash
+
+
+userId () {
+local returnValue
+returnValue=$(id | awk '$1=$1' FS=" " OFS="\n" | awk 'NR==1')
+echo "$returnValue"
+}
+
+
+groupId () {
+local returnValue
+returnValue=$(getent passwd $NAMED_USER | awk '{print $4}' FS=":")
+echo "$returnValue"
+}
+
+SELECTED_OPTION=$1
+NAMED_USER=$2
+
+case $SELECTED_OPTION in
+    "userid") userId;;
+    "groupid") groupId;;
+esac

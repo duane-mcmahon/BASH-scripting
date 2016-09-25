@@ -4,11 +4,13 @@ getProcessorsNumber () {
 local returnValue
 #returnValue=$(grep -c ^processor /proc/cpuinfo)
 returnValue=$(awk '/^processor/ {count++}END{print count}' /proc/cpuinfo)
-echo "$returnValue"    
+echo "The number of available processors is: $returnValue"    
 }
 
 openFilesFunc () {
-echo "something"
+local returnValue
+returnValue=$(ulimit -n)
+echo "The maximum number of open files allowed for this user is: $returnValue"
 }
 
 fileSearch () { 
