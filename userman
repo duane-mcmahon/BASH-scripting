@@ -1,18 +1,68 @@
 #!/usr/bin/bash
+# shellcheck disable=SC2012
 
 
 userId () {
 local returnValue
-returnValue=$(id | awk '$1=$1' FS=" " OFS="\n" | awk 'NR==1')
-echo "$returnValue"
-}
+returnValue=$(getent passwd "$NAMED_USER" | awk '{print $3}' FS=":")
+if [ "$returnValue" ]
+    then
+        echo "$returnValue"
+    else
+        echo "No corresponding user."
+fi
 
+}
 
 groupId () {
 local returnValue
-returnValue=$(getent passwd $NAMED_USER | awk '{print $4}' FS=":")
-echo "$returnValue"
+returnValue=$(getent passwd "$NAMED_USER" | awk '{print $4}' FS=":")
+if [ "$returnValue" ]
+    then
+        echo "$returnValue"
+    else
+        echo "No corresponding user."
+fi
 }
+
+comment () {
+local returnValue
+returnValue=$(getent passwd "$NAMED_USER" | awk '{print $5}' FS=":")
+if [ "$returnValue" ]
+    then
+        echo "$returnValue"
+    else
+        echo "No corresponding user."
+fi
+
+}
+
+homecheck () {
+if [ "$NAMED_USER" == "$USER" ]
+    then
+        ls -a --color ~/ | less -R
+    else
+        echo "Out of scope for this exercise."
+fi
+
+}
+
+shellcheck () {
+local returnValue
+returnValue=$(getent passwd "$NAMED_USER" | awk '{print $7}' FS=":" | cut -d'/' -s -f3)
+if [ "$returnValue" ]
+    then
+        echo "$returnValue"
+    else
+        echo "No corresponding user."
+fi
+}
+
+if [ $# -ne 2 ]
+then
+        echo 'Error: the script requires exactly TWO arguments (function name and user name).'
+        exit 0
+fi
 
 SELECTED_OPTION=$1
 NAMED_USER=$2
@@ -20,4 +70,7 @@ NAMED_USER=$2
 case $SELECTED_OPTION in
     "userid") userId;;
     "groupid") groupId;;
+    "comment") comment;;
+    "home") homecheck;;
+    "shell") shellcheck;;
 esac

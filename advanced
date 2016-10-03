@@ -14,12 +14,12 @@ echo "The maximum number of open files allowed for this user is: $returnValue"
 }
 
 fileSearch () { 
-if [ -z "$SOURCE" -o  -z "$DESTINATION" ]; then
+if [ -z "$SOURCE" ] || [ -z "$DESTINATION" ]; then
     echo "This option requires exactly TWO arguments."
     exit 0
 fi
 local queryResult
-queryResult=$(find . ~/ -name "$SOURCE")
+queryResult=$(find . -type f ~/ -name "$SOURCE")
 if [ -n "$queryResult" ]; then
     if [ -d "$DESTINATION" ]; then
         for item in $queryResult
@@ -35,9 +35,10 @@ if [ -n "$queryResult" ]; then
     done
 fi
 }
+
 SOURCE=
 DESTINATION=
-while getopts “pob:” OPTION
+while getopts "pob:" OPTION
 do
     case $OPTION in
         p) getProcessorsNumber;;

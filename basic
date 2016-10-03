@@ -6,7 +6,7 @@ freemem () {
 local intermediateValue
 local returnValue
 intermediateValue=$(awk 'FNR==2{print $2}' /proc/meminfo)
-if [ $? -eq 0 ]
+if [ "$intermediateValue" ]
 then
         returnValue=$((intermediateValue / MEGABYTE))
         echo "The amount of free memory available is: $returnValue megabytes." 
@@ -19,8 +19,8 @@ fi
 
 diskfree () {
 local returnValue
-returnValue=$(df -h 2>/dev/null | awk  '{print $1"\t\t" $4"\t"}' | column -t; exit ${PIPESTATUS[0]})
-if [ $? -eq 0 ]
+returnValue=$(df -h 2>/dev/null | awk  '{print $1"\t\t" $4"\t"}' | column -t)
+if [ "${PIPESTATUS[0]}" -eq 0 ]
 then
         echo "$returnValue" | more
         exit 0
@@ -32,8 +32,8 @@ fi
 
 quotacheck () {
 local returnValue
-returnValue=$(quota -ws 2>/dev/null | awk '{print $1"\t\t" $7"\t"}' | column -t; exit ${PIPESTATUS[0]})
-if [ $? -eq 0 ]
+returnValue=$(quota -ws 2>/dev/null | awk '{print $1"\t\t" $7"\t"}' | column -t)
+if [ "${PIPESTATUS[0]}" -eq 0 ]
 then
         echo "$returnValue"
         exit 0
@@ -47,8 +47,8 @@ fi
 
 groupscheck () {
 local returnValue
-returnValue=$(groups | awk '$1=$1' FS=" " OFS="\n"; exit ${PIPESTATUS[0]]})
-if [ $? -eq 0 ]
+returnValue=$(groups | awk '$1=$1' FS=" " OFS="\n")
+if [ "${PIPESTATUS[0]}" -eq 0 ]
 then
         echo "$returnValue" | more
         exit 0
@@ -60,8 +60,8 @@ fi
 
 historycheck () {
 local returnValue
-returnValue=$(cat ~/.bash_history || exit 1)
-if [ $? -eq 0 ]
+returnValue=$(cat ~/.bash_history)
+if [ "$returnValue" ]
 then
         echo "$returnValue" | less
         exit 0
