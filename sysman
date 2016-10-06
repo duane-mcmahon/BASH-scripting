@@ -53,7 +53,9 @@ done
 
 advanced_third_option(){
 
-read -p "Search for all files that match the first argument and copy them to the destination specified by the second argument. Please enter the wildcard followed by the destination path: `echo $'\n>'`" src dest
+read -p "Search for all files that match the first argument and copy them to the destination
+specified by the second argument. Please enter the wildcard followed by the destination
+path: `echo $'\n>'`" src dest
 
 $ADVANCED "-b" "$src" "$dest"
 
