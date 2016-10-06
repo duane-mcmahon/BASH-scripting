@@ -1,6 +1,23 @@
 #!/usr/bin/bash
 
+
+#************************************************#
+#                    basic                       #
+#           written by Duane McMahon             #
+#             Student Id: s3116979               #
+#                                                #
+# Reports on aspects of the state of the system  #
+#************************************************#
+
 MEGABYTE=1024
+SELECTED_OPTION=$1
+
+# ------------------------------------------------------------ #
+# freemem ()                                                   #
+# displays the amount of free memory available on the system.  #
+# Parameter:                                                   #
+# Returns: 0 on success, 1 if something went wrong.            #
+# -------------------------------------------------------------#
 
 freemem () {
 local intermediateValue
@@ -17,6 +34,13 @@ else
 fi
 }
 
+# ------------------------------------------------------------ #
+# diskfree ()                                                  #
+# displays the amount of disk space free on each partition     #
+# Parameter:                                                   #
+# Returns: 0 on success, 1 if something went wrong.            #
+# -------------------------------------------------------------#
+
 diskfree () {
 local returnValue
 returnValue=$(df -h 2>/dev/null | awk  '{print $1"\t\t" $4"\t"}' | column -t)
@@ -29,6 +53,13 @@ else
         exit 1
 fi
 }
+
+# ------------------------------------------------------------ #
+# quotacheck ()                                                #
+# displays the disk quota for the current user                 #
+# Parameter:                                                   #
+# Returns: 0 on success, 1 if something went wrong.            #
+# -------------------------------------------------------------#
 
 quotacheck () {
 local returnValue
@@ -45,6 +76,13 @@ else
 fi
 }
 
+# ------------------------------------------------------------ #
+# groupscheck ()                                               #
+# displays the groups that the current user is a member of     #
+# Parameter:                                                   #
+# Returns: 0 on success, 1 if something went wrong.            #
+# -------------------------------------------------------------#
+
 groupscheck () {
 local returnValue
 returnValue=$(groups | awk '$1=$1' FS=" " OFS="\n")
@@ -57,6 +95,14 @@ else
         exit 1
 fi
 }
+
+# ------------------------------------------------------------ #
+# historycheck ()                                              #
+# displays a history of the commands entered into the          #
+# 'current'shell. Please see note 2) in the readme.txt         #
+# Parameter:                                                   #
+# Returns: 0 on success, 1 if something went wrong.            #
+# -------------------------------------------------------------#
 
 historycheck () {
 local returnValue
@@ -76,8 +122,6 @@ then
         echo 'Error: the script requires exactly ONE argument.'
         exit 0
 fi
-
-SELECTED_OPTION=$1
 
 case $SELECTED_OPTION in
         "freemem") freemem;;

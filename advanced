@@ -1,50 +1,98 @@
 #!/usr/bin/bash
 
-getProcessorsNumber () { 
-local returnValue
-#returnValue=$(grep -c ^processor /proc/cpuinfo)
-returnValue=$(awk '/^processor/ {count++}END{print count}' /proc/cpuinfo)
-echo "The number of available processors is: $returnValue"    
-}
-
-openFilesFunc () {
-local returnValue
-returnValue=$(ulimit -n)
-echo "The maximum number of open files allowed for this user is: $returnValue"
-}
-
-fileSearch () { 
-if [ -z "$SOURCE" ] || [ -z "$DESTINATION" ]; then
-    echo "This option requires exactly TWO arguments."
-    exit 0
-fi
-local queryResult
-queryResult=$(find . -type f ~/ -name "$SOURCE")
-if [ -n "$queryResult" ]; then
-    if [ -d "$DESTINATION" ]; then
-        for item in $queryResult
-        do
-            cp -v "$item" "$DESTINATION"
-        done
-        return
-    fi
-    mkdir $DESTINATION
-    for item in $queryResult
-    do
-        cp -v "$item" "$DESTINATION"
-    done
-fi
-}
+#************************************************#
+#                    advanced                    #
+#           written by Duane McMahon             #
+#             Student Id: s3116979               #
+#                                                #
+# Reports on aspects of the state of the system  #
+#************************************************#
 
 SOURCE=
 DESTINATION=
+
+# ------------------------------------------------------------ #
+# getProcessorsNumber ()                                       #
+# displays the number of CPUs available.                       #
+# Parameter:                                                   #
+# Returns: 0 on success, 1 if something went wrong.            #
+# -------------------------------------------------------------#
+
+getProcessorsNumber () { 
+local returnValue
+returnValue=$(awk '/^processor/ {count++}END{print count}' /proc/cpuinfo)
+if [ "$returnValue" ]; then
+	echo "The number of available processors is: $returnValue"
+	exit 0
+fi
+exit 1
+}
+
+# ------------------------------------------------------------ #
+# getMaxOpenFilesQty ()                                        #
+# displays the maximum number of open files allowed per user.  #
+# Parameter:                                                   #
+# Returns: 0 on success, 1 if something went wrong.            #
+# -------------------------------------------------------------#
+
+getMaxOpenFilesQty () {
+local returnValue
+returnValue=$(ulimit -n)
+if [ "$returnValue" ]; then
+echo "The maximum number of open files allowed for this user is: $returnValue"
+exit 0
+fi
+exit 1
+}
+
+# ------------------------------------------------------------ #
+# bulkCopy ()                                                  #
+# searches for all files that match the wildcard specified     #
+# and copies them to the destination specified.                #
+# Parameter: $SOURCE, DESTINATION                              #
+# Returns: 0 on success, 1 if something went wrong.            #
+# -------------------------------------------------------------#
+
+bulkCopy () { 
+if [ -z "$SOURCE" ] || [ -z "$DESTINATION" ]; then
+    echo "This option requires exactly TWO arguments."
+    exit 1
+fi
+local queryResult
+queryResult=$(find . ~/ -name "$SOURCE")
+if [ -n "$queryResult" ]; then
+    if [ -d "$DESTINATION" ]; then
+        for item in $queryResult
+           do 
+                if [ -f "$item" ]
+                    then
+                        cp -v "$item" "$DESTINATION"
+                    
+                fi
+           done
+        exit 0
+    fi
+    mkdir $DESTINATION
+    for item in $queryResult
+    
+        do
+            if [ -f "$item" ]
+                then
+                    cp -v "$item" "$DESTINATION"
+           
+            fi
+        done
+fi
+exit 0
+}
+
 while getopts "pob:" OPTION
 do
     case $OPTION in
         p) getProcessorsNumber;;
-        o) openFilesFunc;;
+        o) getMaxOpenFilesQty;;
         b) SOURCE=$OPTARG
            eval "DESTINATION=\$$((OPTIND))"
-           fileSearch;;
+           bulkCopy;;
     esac
 done

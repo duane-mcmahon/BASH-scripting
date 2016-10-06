@@ -1,19 +1,27 @@
 #!/bin/bash
 # A menu driven shell script 
 ## ----------------------------------
-# Step #1: Define variables
+# User defined variables
 # ----------------------------------
+
 EDITOR=vim
 PASSWD=/etc/passwd
 RED='\033[0;41;30m'
 STD='\033[0;0;39m'
- 
+SCRIPTLOC=$(readlink -f "$0")
+CURRENT_DIR=$(dirname "$SCRIPTLOC")
+BASIC=$CURRENT_DIR/basic
+ADVANCED=$CURRENT_DIR/advanced
+USERMAN=$CURRENT_DIR/userman
+
 # ----------------------------------
-# Step #2: User defined function
+# User defined function
 # ----------------------------------
 pause(){
-  read -p "Press [Enter] key to continue..." fackEnterKey
-}
+    
+    read -p "Press [Enter] key to continue..." fackEnterKey
+} 
+
 # load the basic menu
 one(){
 while true
@@ -26,50 +34,147 @@ done
  
 #load the advanced menu
 two(){
-	echo "two() called"
-        pause
+while true
+do
+    show_advanced_menu
+    read_advanced_options
+done
 }
 
+#load the passwd parsing menu
 three(){
-    echo ""
+while true
+do
+    show_userman_menu
+    read_userman_options
+done
 
 }
- 
+
+advanced_third_option(){
+
+read -p "Search for all files that match the first argument and copy them to the destination specified by the second argument. Please enter the wildcard followed by the destination path: `echo $'\n>'`" src dest
+
+$ADVANCED "-b" "$src" "$dest"
+
+}
+
+userman_first_option(){
+
+read -p "Display the user id for the user you specify below: `echo $'\n>'`" usr
+
+$USERMAN "userid" "$usr"
+
+}
+
+userman_second_option(){
+
+read -p "Display the default group id for the user you specify below: `echo $'\n>'`" usr
+
+$USERMAN "groupid" "$usr"
+
+}
+
+userman_third_option(){
+
+read -p "Display the comment field for the user you specifiy below: `echo $'\n>'`" usr
+
+$USERMAN "comment" "$usr"
+
+}
+
+userman_fourth_option(){
+
+read -p "Display the home directory of the user you specify below: `echo $'\n>'`" usr
+
+$USERMAN "home" "$usr"
+
+}
+
+
+userman_fifth_option(){
+
+read -p "Display the default login shell for the user you specify below: `echo $'\n>'`" usr
+
+$USERMAN "shell" "$usr"
+
+}    
+
 # function to display menus
 show_main_menu() {
 	clear
-	echo "####################################"
-	echo "#"	
-	echo "# Welcome to System Manager"
-	echo "# -------------------------"
-	echo "# 1) basic menu options"
-	echo "# 2) advanced menu options"
-	echo "# 3) passwd file options"
-	echo "# 4) quit"
+	echo "##############################"
+	echo "#                            #"	
+	echo "# Welcome to System Manager  #"
+	echo "# -------------------------  #"
+	echo "# 1) basic menu options      #"
+	echo "# 2) advanced menu options   #"
+	echo "# 3) passwd file options     #"
+	echo "# 4) quit                    #"
+    echo "#                            #"
+    echo "##############################"
+    echo ""
 }
 
 show_basic_menu() {
 	clear
-	echo "####################################"
-	echo "#"	
-	echo "# Basic Tasks Menu"
-	echo "# -------------------------"
-	echo "# 1) Show free memory"
-	echo "# 2) Show free disk space"
-	echo "# 3) Show disk quota"
-    echo "# 4) Show the groups I am a member of"
-    echo "# 5) Show the history of commands for bash"
-	echo "# 6) return to the Main Menu"
+	echo "#############################################"
+	echo "#                                           #"	
+	echo "# Basic Tasks Menu                          #"
+	echo "# -------------------------                 #"
+	echo "# 1) Show free memory                       #"
+	echo "# 2) Show free disk space                   #"
+	echo "# 3) Show disk quota                        #"
+    echo "# 4) Show the groups I am a member of       #"
+    echo "# 5) Show the history of commands for bash  #"
+	echo "# 6) Return to the Main Menu                #"
+    echo "#                                           #"
+    echo "#############################################"
+    echo ""
 }
+
+show_advanced_menu() {
+	clear
+	echo "###############################################################"
+	echo "# 	                                                        #"
+	echo "# Advanced Tasks Menu                                         #"
+	echo "# -------------------------                                   #"
+	echo "# 1) Print the number of CPUs available on the system         #"
+	echo "# 2) Print the maximum number of open files allowed per user  #"
+	echo "# 3) Backup all files that match a criteria                   #"
+	echo "# 4) Return to the Main Menu                                  #"
+    echo "#                                                             #"
+    echo "###############################################################"
+    echo ""
+}
+
+show_userman_menu() {
+	clear
+	echo "###################################################"
+	echo "#                                                 #"	
+	echo "# Passwd Tasks Menu                               #"
+	echo "# -------------------------                       #"
+	echo "# 1) Print the userid of a specified user         #"
+	echo "# 2) Print the groupid of a specified user        #"
+	echo "# 3) Print the comment field for a specified user #"
+    echo "# 4) Print the home directory of a specified user #"
+    echo "# 5) Print the default shell of a specified user  #"
+	echo "# 6) Return to the Main Menu                      #"
+    echo "#                                                 #"
+    echo "###################################################"
+    echo ""
+}
+
+
 # read input from the keyboard and take a action
-# invoke the one() when the user select 1 from the menu option.
-# invoke the two() when the user select 2 from the menu option.
-# Exit when user the user select 3 form the menu option.
+# invoke the one() when the user selects 1 from the menu option.
+# invoke the two() when the user selects 2 from the menu option.
+# Exit when user the user selects 3 form the menu option.
 read_main_options(){
 	local choice
 	read -p "Please enter a choice [1 - 4]" choice
 	case $choice in
-		1) one ;;
+		1) one;;
 		2) two ;;
         3) three;;
 		4) exit 0;;
@@ -81,33 +186,49 @@ read_basic_options(){
 	local choice
 	read -p "Please enter a choice [1 - 6]" choice
 	case $choice in
-		1) basic_one ;;
-		2) basic_two ;;
-        3) basic_three;;
-        4) basic_four;;
-		5) basic_five;;
-        6) exit 0;;
+		1) $BASIC "freemem"; pause;;
+		2) $BASIC "diskfree"; pause;;
+        3) $BASIC "quota"; pause;;
+        4) $BASIC "groups"; pause;;
+		5) $BASIC "history"; pause;;
+        6) exec "$SCRIPTLOC";;
 		*) echo -e "${RED}Error...${STD}" && sleep 2
 	esac
 
 
 }
 
- 
 read_advanced_options(){
+	local choice
+	read -p "Please enter a choice [1 - 4]" choice
+	case $choice in
+		1) $ADVANCED "-p"; pause;;
+		2) $ADVANCED "-b"; pause;;
+        3) advanced_third_option; pause;;
+        4) exec "$SCRIPTLOC";;
+		*) echo -e "${RED}Error...${STD}" && sleep 2
+	esac
+
+
+}
+
+read_userman_options(){
+
 	local choice
 	read -p "Please enter a choice [1 - 6]" choice
 	case $choice in
-		1) advanced_one ;;
-		2) advanced_two ;;
-        3) advanced_three;;
-        4) exit 0;;
+		1) userman_first_option; pause;;
+		2) userman_second_option; pause;;
+        3) userman_third_option; pause;;
+        4) userman_fourth_option; pause;;
+		5) userman_fifth_option; pause;;
+        6) exec "$SCRIPTLOC";;
 		*) echo -e "${RED}Error...${STD}" && sleep 2
 	esac
 
 
-}
 
+}
 
 # ----------------------------------------------
 # Trap CTRL+C, CTRL+Z and quit singles

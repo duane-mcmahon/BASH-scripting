@@ -1,6 +1,25 @@
 #!/usr/bin/bash
 # shellcheck disable=SC2012
+# see note 1) in the readme.txt for an explanation of the above directive
 
+#************************************************#
+#                   userman                      #
+#           written by Duane McMahon             #
+#             Student Id: s3116979               #
+#                                                #
+#          Parsing the /etc/passwd file          #
+#                                                #
+#************************************************#
+
+SELECTED_OPTION=$1
+NAMED_USER=$2
+
+# ------------------------------------------------------------ #
+# userid ()                                                    #
+# displays the user id for the user specified.                 #
+# Parameter: $NAMED_USER                                       #
+# Returns: 0 on success, 1 if something went wrong.            #
+# -------------------------------------------------------------#
 
 userId () {
 local returnValue
@@ -8,11 +27,20 @@ returnValue=$(getent passwd "$NAMED_USER" | awk '{print $3}' FS=":")
 if [ "$returnValue" ]
     then
         echo "$returnValue"
+	exit 0
     else
         echo "No corresponding user."
+	exit 1
 fi
 
 }
+
+# ------------------------------------------------------------ #
+# groupid ()                                                   #
+# displays the group id for the user specified.                #
+# Parameter: $NAMED_USER                                       #
+# Returns: 0 on success, 1 if something went wrong.            #
+# -------------------------------------------------------------#
 
 groupId () {
 local returnValue
@@ -20,10 +48,19 @@ returnValue=$(getent passwd "$NAMED_USER" | awk '{print $4}' FS=":")
 if [ "$returnValue" ]
     then
         echo "$returnValue"
+	exit 0
     else
         echo "No corresponding user."
+	exit 1
 fi
 }
+
+# ------------------------------------------------------------ #
+# comment ()                                                   #
+# displays the GECOS field for the user specified.             #
+# Parameter: $NAMED_USER                                       #
+# Returns: 0 on success, 1 if something went wrong.            #
+# -------------------------------------------------------------#
 
 comment () {
 local returnValue
@@ -31,46 +68,64 @@ returnValue=$(getent passwd "$NAMED_USER" | awk '{print $5}' FS=":")
 if [ "$returnValue" ]
     then
         echo "$returnValue"
+        exit 0
     else
         echo "No corresponding user."
+        exit 1
 fi
 
 }
+
+# ------------------------------------------------------------ #
+# homecheck ()                                                 #
+# displays the content of the home directory                   #
+# for the user specified.                                      #
+# Parameter: $NAMED_USER                                       #
+# Returns: 0 on success, 1 if something went wrong.            #
+# -------------------------------------------------------------#
 
 homecheck () {
 if [ "$NAMED_USER" == "$USER" ]
     then
         ls -a --color ~/ | less -R
+        exit 0
     else
         echo "Out of scope for this exercise."
+        exit 1
 fi
 
 }
 
-shellcheck () {
+# ------------------------------------------------------------ #
+# shell ()                                                #
+# displays the default login shell for the user specified.     #
+# Parameter: $NAMED_USER                                       #
+# Returns: 0 on success, 1 if something went wrong.            #
+# -------------------------------------------------------------#
+
+shell () {
 local returnValue
 returnValue=$(getent passwd "$NAMED_USER" | awk '{print $7}' FS=":" | cut -d'/' -s -f3)
 if [ "$returnValue" ]
     then
         echo "$returnValue"
+        exit 0
     else
         echo "No corresponding user."
+        exit 1
 fi
 }
 
 if [ $# -ne 2 ]
 then
         echo 'Error: the script requires exactly TWO arguments (function name and user name).'
-        exit 0
+        exit 1
 fi
-
-SELECTED_OPTION=$1
-NAMED_USER=$2
 
 case $SELECTED_OPTION in
     "userid") userId;;
     "groupid") groupId;;
     "comment") comment;;
     "home") homecheck;;
-    "shell") shellcheck;;
+    "shell") shell;;
 esac
