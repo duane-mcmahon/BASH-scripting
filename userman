@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 # shellcheck disable=SC2012
 # see note 1) in the readme.txt for an explanation of the above directive
 

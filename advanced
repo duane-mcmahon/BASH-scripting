@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 #************************************************#
 #                    advanced                    #
@@ -39,8 +39,8 @@ getMaxOpenFilesQty () {
 local returnValue
 returnValue=$(ulimit -n)
 if [ "$returnValue" ]; then
-echo "The maximum number of open files allowed for this user is: $returnValue"
-exit 0
+    echo "The maximum number of open files allowed for this user is: $returnValue"
+    exit 0
 fi
 exit 1
 }
