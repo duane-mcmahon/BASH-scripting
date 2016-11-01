@@ -72,7 +72,7 @@ if [ -n "$queryResult" ]; then
            done
         exit 0
     fi
-    mkdir $DESTINATION
+    mkdir -p $DESTINATION
     for item in $queryResult
     
         do
@@ -82,8 +82,10 @@ if [ -n "$queryResult" ]; then
            
             fi
         done
+    
+    exit 0
 fi
-exit 0
+exit 1
 }
 
 while getopts "pob:" OPTION
