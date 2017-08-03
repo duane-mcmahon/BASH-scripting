@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# written by Duane McMahon
+# Reports on aspects of the state of the system
+# does not necessarily port to other distributions due to hardcoding of the locations of the binaries used immediately below
+UPTIME_REPORT=/usr/bin/uptime
+ACTIVE_CONNECTIONS_REPORT=/bin/netstat
+LOGINS_REPORT=/usr/bin/w
+LIVE_PROCESSES_REPORT=/usr/bin/top
+
+RED='\033[0;41;30m'
+STD='\033[0;0;39m'
+
+# see 'man uptime'
+uptime () {
+local returnValue
+# i.e. captures the value in the third column of the command output
+returnValue=$($UPTIME_REPORT | awk '{print $3}' | sed -e 's/:/ hours /' -e 's/,$//')
+echo -e "--Server Uptime Report-- \n"
+echo "The server has been up for: $returnValue minutes"
+
+}
+# see 'man netstat'
+active () {
+local returnValue
+returnValue=$($ACTIVE_CONNECTIONS_REPORT -an | grep ESTABLISHED)
+echo -e "--Current Connections Report-- \n"
+if [ "$returnValue" ]; then
+	echo "The current connections are: /n $returnValue"
+else
+	echo -e "${RED}There are no current connections!${STD}"
+fi
+
+}
+# see 'man w'
+logins () {
+local returnValue
+returnValue=$($LOGINS_REPORT | awk '{print $4}')
+echo -e "--Recent Logins Report-- \n"
+echo "$returnValue"
+
+}
+
+# calculates cpu utilization from the stat file as a percentage from the time when the system was last booted.
+# see: 'man 5 proc'
+utilised () { 
+local returnValue
+returnValue=$(awk '/cpu /{print 100*($2+$4)/($2+$4+$5)}' /proc/stat)
+echo -e "--CPU Utilisation Report-- \n"
+echo "$returnValue% utilisation since system startup."
+}
+
+
+hottest () {
+local returnValue
+returnValue=$($LIVE_PROCESSES_REPORT -b -n1 | head -n 12 | tail -n 5)
+echo -e "--Five Most CPU Intensive Live Processes \n"
+echo "$returnValue"
+}
+
+uptime
+echo "#################################################################################################"
+active
+echo "#################################################################################################"
+logins
+echo "#################################################################################################"
+utilised
+echo "#################################################################################################"
+hottest
+echo "#################################################################################################"
